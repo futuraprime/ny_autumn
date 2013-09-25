@@ -40,7 +40,11 @@ def colorz(url, n=3):
     clusters = kmeans(points, n, 1)
     rgbs = [map(int, c.center.coords) for c in clusters]
     # return [colorsys.rgb_to_hsv(*rgb) for rgb in rgbs]
-    return map(rgb_to_hsv, rgbs)
+    # return map(rgb_to_hsv, rgbs)
+    return [{
+        'hex' : rtoh(rgb),
+        'hsv' : rgb_to_hsv(rgb)
+    } for rgb in rgbs]
 
 def euclidean(p1, p2):
     return sqrt(sum([
