@@ -13,6 +13,7 @@ class Photo:
 
     def process(self):
         self.colors = process_image.colorz(self.url)
+        return self.colors
 
     def __repr__(self):
         return '<Photo id:%s lat:%f lng:%f>' % (self.id, self.lat, self.lng)

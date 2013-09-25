@@ -1,7 +1,9 @@
+from __future__ import division
 from collections import namedtuple
 from math import sqrt
 import random
 import io
+import colorsys
 
 import urllib2
 import Image
@@ -21,6 +23,11 @@ def get_points(img):
 
 rtoh = lambda rgb: '#%s' % ''.join(('%02x' % p for p in rgb))
 
+def rgb_to_hsv(rgb):
+    scaled_rgb = (v/255 for v in rgb)
+    h,s,v = colorsys.rgb_to_hsv(*scaled_rgb)
+    return [h * 360, s * 100, v * 100]
+
 def colorz(url, n=3):
     fd = urllib2.urlopen(url)
     image_file = io.BytesIO(fd.read())
@@ -32,7 +39,8 @@ def colorz(url, n=3):
     points = get_points(img)
     clusters = kmeans(points, n, 1)
     rgbs = [map(int, c.center.coords) for c in clusters]
-    return map(rtoh, rgbs)
+    # return [colorsys.rgb_to_hsv(*rgb) for rgb in rgbs]
+    return map(rgb_to_hsv, rgbs)
 
 def euclidean(p1, p2):
     return sqrt(sum([
