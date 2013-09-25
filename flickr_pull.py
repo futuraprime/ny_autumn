@@ -1,4 +1,5 @@
 import flickrapi
+import process_image
 
 class Photo:
     def __init__(self, photo_xml):
@@ -9,6 +10,9 @@ class Photo:
         self.width = int(attrs['width_m'])
         self.lat = float(attrs['latitude'])
         self.lng = float(attrs['longitude'])
+
+    def process(self):
+        self.colors = process_image.colorz(self.url)
 
     def __repr__(self):
         return '<Photo id:%s lat:%f lng:%f>' % (self.id, self.lat, self.lng)
