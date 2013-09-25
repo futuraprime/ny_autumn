@@ -1,6 +1,24 @@
 import flickrapi
 import process_image
 
+rtoh = lambda rgb: '#%s' % ''.join(('%02x' % p for p in rgb))
+
+def is_autumn_color(h,s,v):
+    return h < 60 & 40 < s < 90 & 25 < v < 65
+
+def average_rgbs(*args):
+    avg = reduce(lambda memo, rgb: [a + b for a, b in zip(memo, rgb)], args)
+    avg = [float(a) / float(len(args)) for a in avg]
+    return (avg, len(args))
+
+class PhotoList(list):
+    def output(self):
+        out = []
+        for item in self:
+            for color in item.autumn_color:
+                out.append((color, item.lat, item.lng, item.id))
+        return out
+
 class Photo:
     def __init__(self, photo_xml):
         attrs = photo_xml.attrib
@@ -10,10 +28,18 @@ class Photo:
         self.width = int(attrs['width_m'])
         self.lat = float(attrs['latitude'])
         self.lng = float(attrs['longitude'])
+        self.process()
 
     def process(self):
+        print 'processing... %s' % self.id
         self.colors = process_image.colorz(self.url)
-        return self.colors
+        self.autumn_color = []
+        for color in self.colors:
+            if is_autumn_color(*color['hsv']):
+                self.autumn_color.append(color)
+        # autumn_avg = average_rgbs(autumn_color)
+        return self.autumn_color
+
 
     def __repr__(self):
         return '<Photo id:%s lat:%f lng:%f>' % (self.id, self.lat, self.lng)
@@ -34,6 +60,9 @@ def get_photos():
         extras='url_m, geo',
     )
 
-    photo_list = [Photo(el) for el in photos.find('photos').findall('photo')]
+    photo_list = PhotoList()
+
+    for el in photos.find('photos').findall('photo'):
+        photo_list.append(Photo(el))
 
     return photo_list

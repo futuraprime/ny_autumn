@@ -42,7 +42,7 @@ def colorz(url, n=3):
     # return [colorsys.rgb_to_hsv(*rgb) for rgb in rgbs]
     # return map(rgb_to_hsv, rgbs)
     return [{
-        'hex' : rtoh(rgb),
+        'rgb' : rgb,
         'hsv' : rgb_to_hsv(rgb)
     } for rgb in rgbs]
 
